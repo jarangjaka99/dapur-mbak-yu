@@ -1,0 +1,54 @@
+name: Deploy ke Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Pasang Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Cek token Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: vercel whoami
+
+      - name: Deploy produksi
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -o pipefail
+          OUT="$(vercel deploy --prod --yes 2>&1)" || { echo "$OUT"; exit 1; }
+          echo "$OUT"
+          URL="$(echo "$OUT" | grep -oE 'https://[a-zA-Z0-9._-]+\.vercel\.app' | tail -1)"
+          if [ -z "$URL" ]; then echo "URL deployment tidak ditemukan"; exit 1; fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Verifikasi halaman live
+        run: |
+          URL="${{ steps.deploy.outputs.url }}"
+          echo "URL: $URL" >> "$GITHUB_STEP_SUMMARY"
+          CODE="$(curl -s -o /tmp/live.html -w '%{http_code}' "$URL")"
+          echo "HTTP $CODE" >> "$GITHUB_STEP_SUMMARY"
+          echo "kode HTTP: $CODE"
+          test "$CODE" = "200"
+          echo "judul:  $(grep -o '<title>[^<]*' /tmp/live.html | head -1)"
+          echo "menu  : $(grep -c 'Sambel Pecel' /tmp/live.html) kemunculan 'Sambel Pecel'"
+          echo "harga : $(grep -c 'Rp 23.000' /tmp/live.html) kemunculan 'Rp 23.000'"
+          echo "chat  : $(grep -c '__chat' /tmp/live.html) kemunculan chatbot"
+          echo "peta  : $(grep -c 'output=embed' /tmp/live.html) peta tersemat"
+          grep -q 'Dapur Mbak Yu' /tmp/live.html
