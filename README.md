@@ -192,6 +192,15 @@ Karena hanya HTML/CSS/JS statis, tidak ada server yang perlu dirawat atau ditamb
 
 ---
 
+### Status deploy (20 Oktober 2026)
+
+- **GitHub:** sudah terunggah di [github.com/jarangjaka99/dapur-mbak-yu](https://github.com/jarangjaka99/dapur-mbak-yu), branch `main`.
+- **Vercel:** belum aktif. Dua penghalang:
+  1. Jaringan mesin ini **memblokir `vercel.com` dan `api.vercel.com`** (TLS direset, `ERR_CONNECTION_RESET`) — CLI maupun browser tidak bisa menembus.
+  2. Token Vercel di mesin ini **sudah kedaluwarsa**; API menjawab `403 invalidToken`.
+- **Jalan keluar yang sudah disiapkan:** workflow `.github/workflows/deploy-vercel.yml` menjalankan deploy dari server GitHub (jaringannya tidak diblokir). Cukup perbarui satu hal: simpan token Vercel baru sebagai secret `VERCEL_TOKEN` di *Settings → Secrets and variables → Actions*. Setiap push ke `main` (atau tombol *Run workflow*) akan langsung mendeploy produksi, lalu memverifikasi halamannya sendiri lewat `curl` dan menulis laporan ke branch `ci-report`.
+- Buat token baru di <https://vercel.com/account/tokens> (butuh jaringan yang bisa membuka Vercel — misalnya data seluler).
+
 ## 9. Catatan operasional
 
 - **Jam buka tidak ditampilkan:** atas permintaan pemilik (20 Okt 2026), jam buka dihapus dari kartu cabang dan dari jawaban chatbot. Bot menjawab jujur bahwa jam belum dicantumkan lalu mengarahkan ke WhatsApp. Kalau nanti jamnya sudah pasti, tambahkan kembali di `.bcard .meta` **dan** di topik `jam` pada chatbot.
