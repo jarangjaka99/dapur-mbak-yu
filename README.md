@@ -195,6 +195,7 @@ Karena hanya HTML/CSS/JS statis, tidak ada server yang perlu dirawat atau ditamb
 ### Status deploy (20 Oktober 2026)
 
 - **GitHub:** sudah terunggah di [github.com/jarangjaka99/dapur-mbak-yu](https://github.com/jarangjaka99/dapur-mbak-yu), branch `main`.
+- **Live sekarang (sementara):** <https://jarangjaka99.github.io/dapur-mbak-yu/> — GitHub Pages aktif dari `main`, sudah dicek HTTP 200 dan seluruh aset termuat.
 - **Vercel:** belum aktif. Dua penghalang:
   1. Jaringan mesin ini **memblokir `vercel.com` dan `api.vercel.com`** (TLS direset, `ERR_CONNECTION_RESET`) — CLI maupun browser tidak bisa menembus.
   2. Token Vercel di mesin ini **sudah kedaluwarsa**; API menjawab `403 invalidToken`.
