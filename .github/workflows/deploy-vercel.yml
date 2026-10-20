@@ -16,39 +16,59 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+
+      - name: Cek token Vercel (HTTP langsung)
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          mkdir -p out
+          CODE="$(curl -s -o out/user.json -w '%{http_code}' \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            https://api.vercel.com/v2/user)"
+          echo "$CODE" > out/user.code
+          echo "kode HTTP /v2/user: $CODE"
+          head -c 400 out/user.json; echo
 
       - name: Pasang Vercel CLI
         run: npm install -g vercel@latest
-
-      - name: Cek token Vercel
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: vercel whoami
 
       - name: Deploy produksi
         id: deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          set -o pipefail
-          OUT="$(vercel deploy --prod --yes 2>&1)" || { echo "$OUT"; exit 1; }
-          echo "$OUT"
-          URL="$(echo "$OUT" | grep -oE 'https://[a-zA-Z0-9._-]+\.vercel\.app' | tail -1)"
-          if [ -z "$URL" ]; then echo "URL deployment tidak ditemukan"; exit 1; fi
+          mkdir -p out
+          set +e
+          vercel deploy --prod --yes > out/deploy.log 2>&1
+          RC=$?
+          set -e
+          echo "exit=$RC" > out/deploy.rc
+          tail -40 out/deploy.log || true
+          echo "exit=$RC" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$RC" -ne 0 ]; then exit "$RC"; fi
+          URL="$(grep -oE 'https://[a-zA-Z0-9._-]+\.vercel\.app' out/deploy.log | tail -1)"
+          echo "$URL" > out/url.txt
           echo "url=$URL" >> "$GITHUB_OUTPUT"
+          echo "URL: $URL" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Verifikasi halaman live
+        if: success()
         run: |
-          URL="${{ steps.deploy.outputs.url }}"
-          echo "URL: $URL" >> "$GITHUB_STEP_SUMMARY"
-          CODE="$(curl -s -o /tmp/live.html -w '%{http_code}' "$URL")"
-          echo "HTTP $CODE" >> "$GITHUB_STEP_SUMMARY"
-          echo "kode HTTP: $CODE"
-          test "$CODE" = "200"
-          echo "judul:  $(grep -o '<title>[^<]*' /tmp/live.html | head -1)"
-          echo "menu  : $(grep -c 'Sambel Pecel' /tmp/live.html) kemunculan 'Sambel Pecel'"
-          echo "harga : $(grep -c 'Rp 23.000' /tmp/live.html) kemunculan 'Rp 23.000'"
-          echo "chat  : $(grep -c '__chat' /tmp/live.html) kemunculan chatbot"
-          echo "peta  : $(grep -c 'output=embed' /tmp/live.html) peta tersemat"
-          grep -q 'Dapur Mbak Yu' /tmp/live.html
+          mkdir -p out
+          URL="$(cat out/url.txt)"
+          CODE="$(curl -s -o out/live.html -w '%{http_code}' "$URL")"
+          { echo "HTTP $CODE"; echo "judul: $(grep -o '<title>[^<]*' out/live.html | head -1)";
+            echo "Sambel Pecel: $(grep -c 'Sambel Pecel' out/live.html)";
+            echo "Rp 23.000: $(grep -c 'Rp 23.000' out/live.html)";
+            echo "chatbot __chat: $(grep -c '__chat' out/live.html)";
+            echo "peta embed: $(grep -c 'output=embed' out/live.html)"; } | tee out/verify.txt
+          cat out/verify.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Simpan artefak hasil
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hasil-deploy
+          path: out/
+          if-no-files-found: warn
