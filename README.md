@@ -200,11 +200,10 @@ Karena hanya HTML/CSS/JS statis, tidak ada server yang perlu dirawat atau ditamb
 
 - **GitHub:** sudah terunggah di [github.com/jarangjaka99/dapur-mbak-yu](https://github.com/jarangjaka99/dapur-mbak-yu), branch `main`.
 - **Live sekarang (sementara):** <https://jarangjaka99.github.io/dapur-mbak-yu/> — GitHub Pages aktif dari `main`, sudah dicek HTTP 200 dan seluruh aset termuat.
-- **Vercel:** belum aktif. Dua penghalang:
-  1. Jaringan mesin ini **memblokir `vercel.com` dan `api.vercel.com`** (TLS direset, `ERR_CONNECTION_RESET`) — CLI maupun browser tidak bisa menembus.
-  2. Token Vercel di mesin ini **sudah kedaluwarsa**; API menjawab `403 invalidToken`.
-- **Jalan keluar yang sudah disiapkan:** workflow `.github/workflows/deploy-vercel.yml` menjalankan deploy dari server GitHub (jaringannya tidak diblokir). Cukup perbarui satu hal: simpan token Vercel baru sebagai secret `VERCEL_TOKEN` di *Settings → Secrets and variables → Actions*. Setiap push ke `main` (atau tombol *Run workflow*) akan langsung mendeploy produksi, lalu memverifikasi halamannya sendiri lewat `curl` dan menulis laporan ke branch `ci-report`.
-- Buat token baru di <https://vercel.com/account/tokens> (butuh jaringan yang bisa membuka Vercel — misalnya data seluler).
+- **Vercel:** **aktif** di <https://dapur-mbak-yu.vercel.app> — proyek `dapur-mbak-yu`, team `jarang-jaka-s-projects`. Deployment produksi pertama: `dpl_6mm2CHcRXkiSm5Dt79xuxFQfBhb8`, status READY, alias otomatis ke domain di atas.
+- **Auto-deploy:** repository GitHub sudah **terhubung** ke proyek Vercel (`vercel git connect`). Setiap push ke `main` langsung dideploy produksi. Tidak perlu token di CI lagi.
+- **Verifikasi live:** HTTP 200, judul halaman benar, 14 kemunculan "Sambel Pecel", harga "Rp 23.000", chatbot (`__chat`), karakter Mbak Yu, balon sapaan, 2 peta tersemat, dan `img/poster.webp` + `img/tahu-gejrot.webp` + `img/logo-dmy.png` semuanya `200`.
+- **Catatan riwayat:** sempat gagal karena (a) jaringan `network tester_5G` memblokir `vercel.com` (TLS reset), lalu (b) token CLI kedaluwarsa (`403 invalidToken`). Setelah Farid pindah ke internet HP, login device-flow berhasil dan deploy berjalan.
 
 ## 9. Catatan operasional
 

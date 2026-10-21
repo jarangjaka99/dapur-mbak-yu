@@ -1,3 +1,4 @@
 .vercel
 *.zip
 .DS_Store
+.env*
