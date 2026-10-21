@@ -205,6 +205,32 @@ Karena hanya HTML/CSS/JS statis, tidak ada server yang perlu dirawat atau ditamb
 - **Verifikasi live:** HTTP 200, judul halaman benar, 14 kemunculan "Sambel Pecel", harga "Rp 23.000", chatbot (`__chat`), karakter Mbak Yu, balon sapaan, 2 peta tersemat, dan `img/poster.webp` + `img/tahu-gejrot.webp` + `img/logo-dmy.png` semuanya `200`.
 - **Catatan riwayat:** sempat gagal karena (a) jaringan `network tester_5G` memblokir `vercel.com` (TLS reset), lalu (b) token CLI kedaluwarsa (`403 invalidToken`). Setelah Farid pindah ke internet HP, login device-flow berhasil dan deploy berjalan.
 
+## 11. QR & materi promosi
+
+Folder `promo/` berisi berkas siap pakai untuk promosi offline maupun status WhatsApp:
+
+| Berkas | Ukuran | Untuk apa |
+|---|---|---|
+| `qr-website.png` | 1024×1024 | QR polos (logo di tengah), tempel di banner, brosur, kemasan |
+| `qr-website.svg` | vektor | percetakan skala besar (tanpa logo, paling aman untuk cetak) |
+| `qr-card-a5.png` / `.pdf` | A5 300 dpi | kartu meja / standee / poster kecil |
+| `qr-sticker.png` | 1400×1400 | status WhatsApp, feed IG, stiker |
+
+- **Isi QR:** `https://dapur-mbak-yu.vercel.app`
+- **Koreksi galat:** level **H (30%)** — tahan kotor/basah dan tetap terbaca walau ada logo di tengah.
+- **Warna:** hijau tua `#0E3B2C` di atas putih (kontras tinggi, aman untuk printer thermal/sepiak).
+- **Sudah diuji pindai** dengan decoder jsQR: terbaca benar pada ukuran **1024 px, 240 px, bahkan 160 px** — jadi aman dicetak kecil (stiker 3×3 cm) maupun ditampilkan di layar.
+- **Mencetak:** pakai `qr-card-a5.pdf` (vektor teks + QR resolusi penuh) agar tajam. Jangan gunting pita putih di sekitar QR — itu *quiet zone* yang wajib ada.
+- **Mengganti alamat:** kalau nanti pakai domain sendiri (mis. `dapurmbakyu.my.id`), buat QR baru dengan alamat itu — QR lama tidak bisa diarahkan ulang.
+
+**Membuat ulang semua materi** (butuh `qrencode` + Python/Pillow):
+
+```bash
+python3 promo/buat-qr.py
+```
+
+Skripnya ada di `promo/buat-qr.py` — ubah variabel `URL` di baris atas kalau alamat situs berubah, lalu jalankan lagi. Font ada di `promo/fonts/` (tidak di-commit ke git, unduh ulang dari Google Fonts bila perlu).
+
 ## 9. Catatan operasional
 
 - **Jam buka tidak ditampilkan:** atas permintaan pemilik (20 Okt 2026), jam buka dihapus dari kartu cabang dan dari jawaban chatbot. Bot menjawab jujur bahwa jam belum dicantumkan lalu mengarahkan ke WhatsApp. Kalau nanti jamnya sudah pasti, tambahkan kembali di `.bcard .meta` **dan** di topik `jam` pada chatbot.
