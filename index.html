@@ -243,9 +243,10 @@
     box-shadow:0 6px 14px -8px rgba(0,0,0,.8);
   }
   .addon-row{
-    display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;
+    display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:14px;
     border-top:1px dashed var(--garis);
   }
+  .addon-row + .add-row{margin-top:14px}
   .addon-info{flex:1;min-width:0;line-height:1.3}
   .addon-info b{display:block;font-size:.86rem;color:var(--hijau);font-weight:800}
   .addon-info small{display:block;font-size:.74rem;color:#7b6650;margin-top:2px}
@@ -1353,14 +1354,6 @@ function renderMenu() {
         <h3>${m.name}</h3>
         <p class="desc">${m.desc}</p>
         <span class="note">${ICONS[m.noteIcon] || ""}${m.note}</span>
-        <div class="add-row">
-          <button class="btn-add" type="button" data-add="${m.id}">${ICONS.plus} Tambah</button>
-          <div class="qty" data-qty="${m.id}">
-            <button type="button" data-dec="${m.id}" aria-label="Kurangi ${m.name}">&minus;</button>
-            <output data-qtyval="${m.id}">0</output>
-            <button type="button" data-inc="${m.id}" aria-label="Tambah ${m.name}">+</button>
-          </div>
-        </div>
         ${m.addon ? `
         <div class="addon-row">
           <span class="addon-info">
@@ -1373,6 +1366,14 @@ function renderMenu() {
             <button type="button" data-ainc="${m.addon.id}" aria-label="Tambah ${m.addon.name}">+</button>
           </div>
         </div>` : ""}
+        <div class="add-row">
+          <button class="btn-add" type="button" data-add="${m.id}">${ICONS.plus} Tambah</button>
+          <div class="qty" data-qty="${m.id}">
+            <button type="button" data-dec="${m.id}" aria-label="Kurangi ${m.name}">&minus;</button>
+            <output data-qtyval="${m.id}">0</output>
+            <button type="button" data-inc="${m.id}" aria-label="Tambah ${m.name}">+</button>
+          </div>
+        </div>
       </div>
     </article>
   `).join("");
