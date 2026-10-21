@@ -32,11 +32,22 @@ dapur-mbak-yu/
 |---|---|---|
 | Sambel Pecel | Rp 23.000 | pilihan sedang / pedas banget |
 | Tahu Gejrot | Rp 10.000 | kuah disiram saat dipesan |
-| Mie Jebew | Rp 5.000 | digoreng dadakan |
+| Mie Jebew | Rp 5.000 | digoreng dadakan — **harga belum termasuk bakso** |
+| Topping Bakso | Rp 1.000/butir | opsional, di luar harga Mie Jebew (maks. 10 butir) |
 | Es Cendol | Rp 8.000 | disajikan dingin |
 
-> Tambahan bakso (yang ada di flyer) **tidak dijual** di website ini sesuai instruksi pemilik.
 > Grid katalog desktop memakai 2×2 agar empat kartu tetap seimbang; di mobile menjadi satu kolom.
+
+### Topping bakso (revisi 21 Okt 2026)
+
+Foto Mie Jebew menampilkan bakso, sedangkan harganya Rp 5.000. Supaya pembeli tidak menyimpulkan "Rp 5.000 sudah dapat 3 bakso", dipakai **empat penanda** sekaligus:
+
+1. **Badge harga** bertuliskan `Rp 5.000` dengan baris kecil **TANPA BAKSO** tepat di bawah angka.
+2. **Baris topping** di kartu: `Topping Bakso — Opsional · +Rp 1.000/butir, di luar harga Mie Jebew`, lengkap dengan stepper 0–10.
+3. **Keranjang** menampilkan bakso sebagai sub-baris indentasi di bawah Mie Jebew (`+ Bakso (topping Mie Jebew) 3 × Rp 1.000 = Rp 3.000`), bukan digabung diam-diam.
+4. **Pesan WhatsApp** menaruh bakso sebagai baris `+ Bakso × 3 — Rp 3.000` di bawah Mie Jebew, sehingga penjual melihat rinciannya.
+
+Bot juga ikut: menjawab harga Mie Jebew dengan catatan topping terpisah, dan perintah seperti *"pesan 2 mie jebew 3 bakso"* menambahkan keduanya sekaligus.
 
 ---
 

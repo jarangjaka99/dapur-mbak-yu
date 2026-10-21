@@ -219,9 +219,13 @@
   .badge.yellow{background:var(--kuning);color:var(--coklat)}
   .price-chip{
     position:absolute;bottom:12px;right:12px;background:var(--kuning);color:var(--coklat);
-    font-family:var(--font-display);font-weight:800;font-size:1.08rem;line-height:1;letter-spacing:-.01em;
-    padding:9px 13px 10px;border-radius:12px 12px 12px 3px;
+    font-family:var(--font-display);font-weight:800;font-size:1.08rem;line-height:1.05;letter-spacing:-.01em;
+    padding:8px 13px 9px;border-radius:12px 12px 12px 3px;text-align:right;
     box-shadow:0 10px 22px -12px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.9);
+  }
+  .price-chip small{
+    display:block;font-family:var(--font-body);font-size:.62rem;font-weight:800;
+    letter-spacing:.04em;text-transform:uppercase;opacity:.75;margin-top:2px;
   }
   .card-body{padding:20px 20px 22px;display:flex;flex-direction:column;flex:1}
   .card-body h3{font-size:1.32rem;color:var(--hijau)}
@@ -232,6 +236,28 @@
     background:rgba(44,107,79,.09);border-radius:999px;padding:5px 11px;align-self:flex-start;
   }
   .card-body .note svg{width:13px;height:13px}
+  .img-tag{
+    position:absolute;left:12px;bottom:12px;max-width:calc(100% - 130px);
+    background:rgba(14,59,44,.93);color:#fff;font-size:.68rem;font-weight:700;
+    letter-spacing:.01em;padding:5px 9px;border-radius:8px;line-height:1.3;
+    box-shadow:0 6px 14px -8px rgba(0,0,0,.8);
+  }
+  .addon-row{
+    display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;
+    border-top:1px dashed var(--garis);
+  }
+  .addon-info{flex:1;min-width:0;line-height:1.3}
+  .addon-info b{display:block;font-size:.86rem;color:var(--hijau);font-weight:800}
+  .addon-info small{display:block;font-size:.74rem;color:#7b6650;margin-top:2px}
+  .addon-qty{
+    display:flex;align-items:center;border:1.5px solid var(--garis);border-radius:12px;
+    overflow:hidden;background:#fff;flex:0 0 auto;
+  }
+  .addon-qty button{width:32px;height:40px;display:grid;place-items:center;font-weight:800;color:var(--hijau);font-size:1.02rem}
+  .addon-qty button:hover{background:rgba(14,59,44,.09)}
+  .addon-qty output{min-width:26px;text-align:center;font-weight:800;font-family:var(--font-display);font-size:.95rem}
+  .addon-qty.on{border-color:var(--hijau);background:#F2F8F3}
+
   .add-row{display:flex;align-items:center;gap:10px;margin-top:18px}
   .btn-add{
     flex:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -307,6 +333,9 @@
   .cart-line .nm{color:#4a382a;font-weight:600;line-height:1.35}
   .cart-line .nm i{font-style:normal;color:#8a7358;font-weight:500;font-size:.8rem;display:block}
   .cart-line .pr{font-weight:700;color:var(--hijau);white-space:nowrap}
+  .cart-line.sub{padding-left:14px;font-size:.84rem}
+  .cart-line.sub .nm{color:#6a5540}
+  .cart-line.sub .pr{color:var(--hijau-3)}
   .cart-line .mini{display:inline-flex;align-items:center;gap:1px;border:1px solid var(--garis);border-radius:9px;overflow:hidden;background:#fff;flex:0 0 auto}
   .cart-line .mini button{width:28px;height:28px;display:grid;place-items:center;font-weight:800;color:var(--hijau);font-size:.95rem;line-height:1}
   .cart-line .mini button:hover{background:rgba(14,59,44,.1)}
@@ -1272,7 +1301,9 @@ const MENU = [
     badgeClass: "badge yellow",
     desc: "Mie goreng pedas dengan topping melimpah. Pedasnya nampol, rasanya pasti jempol!",
     note: "Digoreng dadakan",
-    noteIcon: "fire"
+    noteIcon: "fire",
+    priceNote: "tanpa bakso",
+    addon: { id: "bakso", name: "Bakso", label: "Bakso (topping Mie Jebew)", price: 1000, unit: "butir", max: 10 }
   },
   {
     id: "es-cendol",
@@ -1301,6 +1332,9 @@ const ICONS = {
    UTIL
    ========================================================= */
 const rupiah = (n) => "Rp " + n.toLocaleString("id-ID");
+const ADDONS = MENU.filter((m) => m.addon).map((m) => m.addon);
+const ALL_ITEMS = [...MENU, ...ADDONS];
+const itemById = (id) => ALL_ITEMS.find((x) => x.id === id);
 const cart = new Map(); // id -> qty
 
 /* =========================================================
@@ -1313,7 +1347,7 @@ function renderMenu() {
       <div class="card-media">
         <img src="${m.image}" alt="${m.alt}" loading="lazy" width="866" height="628" />
         <span class="${m.badgeClass}">${m.badge}</span>
-        <span class="price-chip">${rupiah(m.price)}</span>
+        <span class="price-chip">${rupiah(m.price)}${m.priceNote ? `<small>${m.priceNote}</small>` : ""}</span>
       </div>
       <div class="card-body">
         <h3>${m.name}</h3>
@@ -1327,6 +1361,18 @@ function renderMenu() {
             <button type="button" data-inc="${m.id}" aria-label="Tambah ${m.name}">+</button>
           </div>
         </div>
+        ${m.addon ? `
+        <div class="addon-row">
+          <span class="addon-info">
+            <b>Topping ${m.addon.name}</b>
+            <small>Opsional · +${rupiah(m.addon.price)}/${m.addon.unit}, di luar harga ${m.name}</small>
+          </span>
+          <div class="addon-qty" data-aqty="${m.addon.id}">
+            <button type="button" data-adec="${m.addon.id}" aria-label="Kurangi ${m.addon.name}">&minus;</button>
+            <output data-aval="${m.addon.id}">0</output>
+            <button type="button" data-ainc="${m.addon.id}" aria-label="Tambah ${m.addon.name}">+</button>
+          </div>
+        </div>` : ""}
       </div>
     </article>
   `).join("");
@@ -1337,7 +1383,9 @@ function renderMenu() {
    ========================================================= */
 function addItem(id, delta = 1) {
   const cur = cart.get(id) || 0;
-  const next = Math.max(0, Math.min(99, cur + delta));
+  const item = itemById(id);
+  const cap = (item && item.max) || 99;
+  const next = Math.max(0, Math.min(cap, cur + delta));
   if (next === 0) cart.delete(id); else cart.set(id, next);
   syncUI(id);
 }
@@ -1345,7 +1393,7 @@ function addItem(id, delta = 1) {
 function totals() {
   let qty = 0, sum = 0;
   for (const [id, q] of cart) {
-    const m = MENU.find((x) => x.id === id);
+    const m = itemById(id);
     if (!m) continue;
     qty += q; sum += m.price * q;
   }
@@ -1372,16 +1420,23 @@ function syncUI(changedId) {
     }
   });
 
+  // kontrol topping di kartu (selalu tampil, mulai dari 0)
+  ADDONS.forEach((a) => {
+    const holder = document.querySelector(`[data-aqty="${a.id}"]`);
+    if (!holder) return;
+    const q = cart.get(a.id) || 0;
+    holder.querySelector("[data-aval]").textContent = q;
+    holder.classList.toggle("on", q > 0);
+  });
+
   // ringkasan keranjang
   const lines = document.getElementById("cartLines");
   const { qty, sum } = totals();
   if (qty === 0) {
     lines.innerHTML = '<p class="cart-empty">Keranjang masih kosong. Pilih menu di atas dulu ya.</p>';
   } else {
-    lines.innerHTML = MENU.filter((m) => cart.has(m.id)).map((m) => {
-      const q = cart.get(m.id);
-      return `<div class="cart-line">
-        <span class="nm">${m.name}<i>${q} × ${rupiah(m.price)}</i></span>
+    const baris = (m, q) => `<div class="cart-line${m.parent ? " sub" : ""}">
+        <span class="nm">${m.parent ? "+ " : ""}${m.label || m.name}<i>${q} × ${rupiah(m.price)}</i></span>
         <span class="mini">
           <button type="button" data-cdec="${m.id}" aria-label="Kurangi ${m.name}">&minus;</button>
           <b>${q}</b>
@@ -1389,10 +1444,29 @@ function syncUI(changedId) {
         </span>
         <span class="pr">${rupiah(m.price * q)}</span>
       </div>`;
+
+    const html = MENU.map((m) => {
+      const q = cart.get(m.id) || 0;
+      const ad = m.addon ? (cart.get(m.addon.id) || 0) : 0;
+      let out = "";
+      if (q) out += baris(m, q);
+      if (ad) {
+        const addonItem = Object.assign({}, m.addon, { parent: m.id });
+        out += baris(addonItem, ad);
+      }
+      return out;
     }).join("");
+
+    // topping yang dipesan tanpa menu induknya
+    const yatim = ADDONS.filter((a) => cart.has(a.id) &&
+      !MENU.some((m) => m.addon && m.addon.id === a.id && cart.has(m.id)))
+      .map((a) => baris(Object.assign({}, a, { parent: "x" }), cart.get(a.id)))
+      .join("");
+
+    lines.innerHTML = html + yatim;
   }
   document.getElementById("cartTotal").textContent = rupiah(sum);
-  document.getElementById("cartCount").textContent = qty + " porsi · " + cart.size + " menu";
+  document.getElementById("cartCount").textContent = qty + " item · " + cart.size + " jenis";
   document.getElementById("cartBarTotal").textContent = rupiah(sum);
   document.getElementById("cartBar").classList.toggle("show", qty > 0);
   document.body.classList.toggle("has-cart", qty > 0);
@@ -1405,9 +1479,16 @@ function syncUI(changedId) {
 function buildMessage({ name, phone, branchKey, note }) {
   const b = CONFIG.branches[branchKey];
   const { sum } = totals();
-  const lines = MENU.filter((m) => cart.has(m.id))
-    .map((m) => `• ${m.name} × ${cart.get(m.id)} — ${rupiah(m.price * cart.get(m.id))}`)
-    .join("\n");
+  const lines = MENU.map((m) => {
+    const q = cart.get(m.id) || 0;
+    const ad = m.addon ? (cart.get(m.addon.id) || 0) : 0;
+    const rows = [];
+    if (q) rows.push(`• ${m.name} × ${q} — ${rupiah(m.price * q)}`);
+    if (ad) {
+      rows.push(`   + ${m.addon.name} × ${ad} — ${rupiah(m.addon.price * ad)}`);
+    }
+    return rows.join("\n");
+  }).filter(Boolean).join("\n");
   const now = new Date().toLocaleString("id-ID", {
     dateStyle: "short", timeStyle: "short", timeZone: "Asia/Jakarta"
   });
@@ -1509,6 +1590,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (add) addItem(add.dataset.add, 1);
     else if (inc) addItem(inc.dataset.inc, 1);
     else if (dec) addItem(dec.dataset.dec, -1);
+  });
+
+  document.getElementById("menuGrid").addEventListener("click", (e) => {
+    const inc = e.target.closest("[data-ainc]");
+    const dec = e.target.closest("[data-adec]");
+    if (!inc && !dec) return;
+    const id = inc ? inc.dataset.ainc : dec.dataset.adec;
+    const a = ADDONS.find((x) => x.id === id);
+    if (!a) return;
+    const cur = cart.get(a.id) || 0;
+    const next = Math.max(0, Math.min(a.max, cur + (inc ? 1 : -1)));
+    if (next === 0) cart.delete(a.id); else cart.set(a.id, next);
+    syncUI(a.id);
   });
 
   document.getElementById("cartLines").addEventListener("click", (e) => {
@@ -1656,8 +1750,9 @@ document.addEventListener("DOMContentLoaded", () => {
       reply: function (t) {
         var p = productByKey(t);
         if (p) {
+          var addonTxt = p.addon ? "\n\n<i>Topping " + p.addon.name + " dihitung terpisah: +" + rp(p.addon.price) + "/" + p.addon.unit + ". Harga " + rp(p.price) + " belum termasuk bakso.</i>" : "";
           return {
-            text: "<b>" + p.name + "</b> — " + rp(p.price) + " per " + p.unit + ".\n" + p.desc + "\n\nCatatan: " + p.note.toLowerCase() + ".",
+            text: "<b>" + p.name + "</b> — " + rp(p.price) + " per " + p.unit + ".\n" + p.desc + "\n\nCatatan: " + p.note.toLowerCase() + "." + addonTxt,
             actions: [{ type: "cart", id: p.id, label: "Tambah ke keranjang" }, { type: "wa", label: "Tanya via WhatsApp" }],
             chips: ["Semua harga", "Cara pesan", "Cabang"]
           };
@@ -1796,9 +1891,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         var q = numFrom(t);
         addItem(p.id, q);
-        var total = MENU.reduce(function (s, m) { return s + (cart.get(m.id) || 0) * m.price; }, 0);
+        var addonMsg = "";
+        if (p.addon && /bakso/.test(t)) {
+          var bt = (t.match(/(\d{1,2})\s*(butir|bakso)/) || [])[1];
+          var bq = Math.max(1, Math.min(p.addon.max, bt ? parseInt(bt, 10) : 1));
+          addItem(p.addon.id, bq);
+          addonMsg = "\nTopping <b>" + bq + " " + p.addon.name + "</b> (" + rp(p.addon.price * bq) + ") ikut ditambahkan.";
+        }
+        var total = ALL_ITEMS.reduce(function (s, m) { return s + (cart.get(m.id) || 0) * m.price; }, 0);
         return {
-          text: "Sudah masuk keranjang: <b>" + q + " " + p.name + "</b> (" + rp(p.price * q) + ").\nTotal keranjang sekarang " + rp(total) + ".",
+          text: "Sudah masuk keranjang: <b>" + q + " " + p.name + "</b> (" + rp(p.price * q) + ")." + addonMsg + "\nTotal keranjang sekarang " + rp(total) + ".",
           actions: [{ type: "scroll", label: "Isi data pesanan" }, { type: "cart", id: p.id, label: "Tambah 1 lagi" }],
           chips: ["Lihat menu", "Ongkir", "Cara pesan"]
         };
