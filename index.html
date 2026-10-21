@@ -471,19 +471,26 @@
 
   /* ============ CHATBOT ============ */
   .chat-fab{
-    position:fixed;right:20px;bottom:96px;z-index:90;width:56px;height:56px;border-radius:50%;
-    background:var(--hijau);color:#fff;display:grid;place-items:center;
-    box-shadow:0 16px 32px -14px rgba(14,59,44,.9);transition:transform .18s, background .18s;
+    position:fixed;right:20px;bottom:96px;z-index:90;width:64px;height:64px;border-radius:50%;
+    background:#fff;display:grid;place-items:center;overflow:visible;
+    border:3px solid #fff;
+    box-shadow:0 18px 34px -14px rgba(14,59,44,.85), 0 0 0 1px rgba(74,44,23,.12);
+    transition:transform .18s, box-shadow .18s;
   }
-  .chat-fab:hover{transform:translateY(-2px);background:var(--hijau-2)}
-  .chat-fab svg{width:26px;height:26px}
+  .chat-fab:hover{transform:translateY(-3px) scale(1.03);box-shadow:0 24px 40px -16px rgba(14,59,44,.9)}
+  .chat-fab .fab-face{width:100%;height:100%;border-radius:50%;display:block}
+  .chat-fab .fab-badge{
+    position:absolute;right:-4px;bottom:-2px;width:24px;height:24px;border-radius:50%;
+    background:var(--hijau);color:#fff;display:grid;place-items:center;border:2.5px solid #fff;
+  }
+  .chat-fab .fab-badge svg{width:12px;height:12px}
   .chat-fab .ping{
-    position:absolute;top:-2px;right:-2px;width:16px;height:16px;border-radius:50%;
-    background:var(--merah);border:2.5px solid var(--kraft);font-size:0;
+    position:absolute;top:-1px;left:-1px;width:14px;height:14px;border-radius:50%;
+    background:#4ADE80;border:2.5px solid #fff;font-size:0;
   }
   .chat-fab .ping::after{
-    content:"";position:absolute;inset:0;border-radius:50%;background:var(--merah);
-    animation:ping 1.8s ease-out infinite;
+    content:"";position:absolute;inset:-2px;border-radius:50%;background:#4ADE80;
+    animation:ping 2s ease-out infinite;
   }
   @keyframes ping{0%{transform:scale(1);opacity:.7}70%,100%{transform:scale(2.2);opacity:0}}
   body.chat-open .chat-fab{display:none}
@@ -502,7 +509,11 @@
   .chat-head{
     display:flex;align-items:center;gap:11px;padding:13px 14px;background:var(--hijau);color:#fff;flex:0 0 auto;
   }
-  .chat-head img{width:38px;height:38px;object-fit:contain;background:#fff;border-radius:50%;padding:3px;flex:0 0 auto}
+  .chat-head .chat-ava{
+    width:42px;height:42px;border-radius:50%;overflow:hidden;flex:0 0 auto;
+    background:#fff;border:2px solid rgba(255,255,255,.9);box-shadow:0 4px 10px -4px rgba(0,0,0,.5);
+  }
+  .chat-head .chat-ava svg{width:100%;height:100%;display:block}
   .chat-head .who{line-height:1.25;min-width:0}
   .chat-head b{display:block;font-family:var(--font-display);font-size:1.02rem;font-weight:800}
   .chat-head small{display:flex;align-items:center;gap:5px;font-size:.72rem;color:#C6D6CB;font-weight:600}
@@ -515,6 +526,13 @@
     flex:1;overflow-y:auto;padding:16px 14px 6px;display:flex;flex-direction:column;gap:10px;
     scroll-behavior:smooth;overscroll-behavior:contain;
   }
+  .msg-row{display:flex;gap:8px;align-items:flex-end;max-width:100%}
+  .msg-row.right{justify-content:flex-end}
+  .msg-ava{
+    width:30px;height:30px;border-radius:50%;overflow:hidden;flex:0 0 auto;
+    box-shadow:0 3px 8px -4px rgba(43,27,16,.6);background:#fff;
+  }
+  .msg-ava svg{width:100%;height:100%;display:block}
   .msg{max-width:86%;padding:10px 14px;border-radius:16px;font-size:.9rem;line-height:1.55;white-space:pre-line;word-break:break-word}
   .msg.bot{background:#fff;border:1px solid var(--garis);border-bottom-left-radius:5px;align-self:flex-start;box-shadow:0 8px 18px -16px rgba(43,27,16,.7)}
   .msg.user{background:var(--hijau);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
@@ -525,13 +543,38 @@
     font-size:.78rem;font-weight:700;padding:8px 12px;border-radius:9px;text-decoration:none;
     background:var(--hijau);color:#fff;display:inline-flex;align-items:center;gap:6px;line-height:1.2;
   }
-  .msg .acts a.wa{background:#25D366;color:#08351c}
+  .msg .acts a.wa{background:#fff;color:#128C4A;border:1.5px solid #25D366;padding:6.5px 11px}
   .msg .acts a:hover,.msg .acts button:hover{filter:brightness(1.08)}
   .msg.typing{display:flex;gap:4px;align-items:center;padding:13px 15px}
   .msg.typing i{width:6px;height:6px;border-radius:50%;background:#B6A48C;animation:blink 1.2s infinite}
   .msg.typing i:nth-child(2){animation-delay:.15s}
   .msg.typing i:nth-child(3){animation-delay:.3s}
   @keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-2px)}}
+
+  .chat-teaser{
+    position:fixed;right:20px;bottom:172px;z-index:90;max-width:290px;
+    background:#fff;border:1px solid var(--garis);border-radius:16px 16px 4px 16px;
+    padding:11px 32px 11px 12px;display:none;gap:10px;align-items:flex-start;
+    box-shadow:0 20px 40px -22px rgba(43,27,16,.7);text-align:left;
+    animation:teaserIn .32s cubic-bezier(.22,1,.36,1);
+  }
+  .chat-teaser.show{display:flex}
+  @keyframes teaserIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+  .chat-teaser .t-ava{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:0 0 auto;background:#F7E7C6}
+  .chat-teaser .t-ava svg{width:100%;height:100%;display:block}
+  .chat-teaser .t-txt{font-size:.83rem;line-height:1.45;color:#3d2c1d}
+  .chat-teaser .t-txt b{color:var(--hijau)}
+  .chat-teaser::after{
+    content:"";position:absolute;bottom:-7px;right:26px;width:14px;height:14px;
+    background:#fff;border-right:1px solid var(--garis);border-bottom:1px solid var(--garis);
+    transform:rotate(45deg);border-radius:0 0 4px 0;
+  }
+  .chat-teaser .t-x{
+    position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;
+    display:grid;place-items:center;font-size:.95rem;line-height:1;color:#7b6650;font-weight:700;
+  }
+  .chat-teaser .t-x:hover{background:var(--kraft-2);color:var(--tinta)}
+  body.chat-open .chat-teaser{display:none}
 
   .chat-chips{display:flex;gap:7px;overflow-x:auto;padding:8px 14px 2px;flex:0 0 auto;scrollbar-width:none}
   .chat-chips::-webkit-scrollbar{display:none}
@@ -557,6 +600,7 @@
 
   @media (max-width:780px){
     .chat-fab{right:14px;bottom:152px}
+    .chat-teaser{right:14px;left:14px;max-width:none;bottom:226px}
     body.has-cart .chat-fab{bottom:166px}
     .chat-panel{right:10px;left:10px;width:auto;bottom:10px;height:min(78dvh,620px);border-radius:18px}
     .chat-body{padding:14px 12px 4px}
@@ -639,6 +683,49 @@
 </style>
 </head>
 <body>
+
+<!-- ================= KARAKTER MBAK YU (SVG) ================= -->
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false">
+  <defs>
+  <g id="mbak-yu">
+    <circle cx="48" cy="48" r="48" fill="#F7E7C6"/>
+    <circle cx="48" cy="48" r="48" fill="none" stroke="#EBD8B6" stroke-width="2"/>
+    <!-- badan / kemeja -->
+    <path d="M19 96c2-16 14-25 29-25s27 9 29 25z" fill="#2E7D6B"/>
+    <path d="M19 96c2-16 14-25 29-25s27 9 29 25z" fill="none" stroke="#25685A" stroke-width="1.5"/>
+    <circle cx="37" cy="88" r="1.7" fill="#F2B830"/>
+    <circle cx="48" cy="92" r="1.7" fill="#F2B830"/>
+    <circle cx="59" cy="88" r="1.7" fill="#F2B830"/>
+    <!-- kerudung -->
+    <path d="M23 96c0-40 8-70 25-70s25 30 25 70z" fill="#17603F"/>
+    <path d="M23 96c0-40 8-70 25-70s25 30 25 70z" fill="none" stroke="#0E3B2C" stroke-width="1.6"/>
+    <!-- bukaan wajah -->
+    <ellipse cx="48" cy="55" rx="14" ry="16.5" fill="#F3C79E"/>
+    <!-- poni/tepi kerudung menutup dahi -->
+    <path d="M34 44c1.5-11 26-11 28 0-3-5-25-5-28 0z" fill="#17603F"/>
+    <path d="M34 44c1.5-11 26-11 28 0" fill="none" stroke="#0E3B2C" stroke-width="1.4" stroke-linecap="round"/>
+    <!-- mata -->
+    <ellipse cx="42.8" cy="54" rx="1.9" ry="2.3" fill="#3A2416"/>
+    <ellipse cx="53.2" cy="54" rx="1.9" ry="2.3" fill="#3A2416"/>
+    <circle cx="43.4" cy="53.3" r="0.7" fill="#fff"/>
+    <circle cx="53.8" cy="53.3" r="0.7" fill="#fff"/>
+    <!-- alis -->
+    <path d="M39.6 49.4c1.6-1.2 4.2-1.2 5.6 0" fill="none" stroke="#5A3A22" stroke-width="1.3" stroke-linecap="round"/>
+    <path d="M50.8 49.4c1.4-1.2 4-1.2 5.6 0" fill="none" stroke="#5A3A22" stroke-width="1.3" stroke-linecap="round"/>
+    <!-- pipi -->
+    <ellipse cx="38.6" cy="60.5" rx="3.1" ry="1.9" fill="#E89A78" opacity=".45"/>
+    <ellipse cx="57.4" cy="60.5" rx="3.1" ry="1.9" fill="#E89A78" opacity=".45"/>
+    <!-- senyum -->
+    <path d="M43.4 62.4c1.6 2.2 4.4 3.2 4.6 3.2s3-.9 4.6-3.1" fill="none" stroke="#A8532F" stroke-width="1.9" stroke-linecap="round"/>
+    <!-- peniti kerudung -->
+    <circle cx="35.4" cy="68" r="1.9" fill="#F2B830"/>
+    <circle cx="60.6" cy="68" r="1.9" fill="#F2B830"/>
+    <!-- cabai kecil di sudut -->
+    <path d="M72 78c4-2 7-6 7-10 0 0 2 6-1 10-2 3-4 3-6 0z" fill="#C8341F"/>
+    <path d="M72 78c-1.6-1.2-2-2.6-2-2.6" fill="none" stroke="#2C6B4F" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+  </defs>
+</svg>
 
 <!-- ================= NAV ================= -->
 <header class="nav" id="nav">
@@ -1084,17 +1171,26 @@
 
 
 <!-- ================= CHATBOT ================= -->
-<button class="chat-fab" id="chatFab" aria-label="Buka asisten Dapur Mbak Yu" aria-expanded="false" aria-controls="chatPanel">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.5 9.5 0 0 1-2.8-.4L3 21l1.5-4.6A8.4 8.4 0 0 1 12 3.1a8.4 8.4 0 0 1 9 8.4z"/></svg>
+<button class="chat-fab" id="chatFab" aria-label="Tanya Mbak Yu (asisten otomatis)" aria-expanded="false" aria-controls="chatPanel">
+  <svg class="fab-face" viewBox="9 14 78 78" aria-hidden="true"><use href="#mbak-yu" /></svg>
+  <span class="fab-badge" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z"/></svg>
+  </span>
   <span class="ping" aria-hidden="true"></span>
+</button>
+
+<button class="chat-teaser" id="chatTeaser" type="button" aria-label="Buka obrolan dengan Mbak Yu">
+  <span class="t-ava" aria-hidden="true"><svg viewBox="9 14 78 78"><use href="#mbak-yu" /></svg></span>
+  <span class="t-txt">Halo, aku <b>Mbak Yu</b> 👋<br />Mau tanya menu, harga, atau ongkir? Sini, aku bantu.</span>
+  <span class="t-x" id="teaserX" role="button" tabindex="0" aria-label="Tutup sapaan">✕</span>
 </button>
 
 <section class="chat-panel" id="chatPanel" role="dialog" aria-modal="false" aria-labelledby="chatTitle" aria-hidden="true">
   <header class="chat-head">
-    <img src="img/logo-dmy.png" alt="" width="38" height="38" />
+    <span class="chat-ava" aria-hidden="true"><svg viewBox="9 14 78 78"><use href="#mbak-yu" /></svg></span>
     <span class="who">
-      <b id="chatTitle">Asisten Mbak Yu</b>
-      <small>Online · balas otomatis</small>
+      <b id="chatTitle">Mbak Yu</b>
+      <small>Asisten otomatis</small>
     </span>
     <button class="chat-close" id="chatClose" aria-label="Tutup obrolan">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -1549,7 +1645,7 @@ document.addEventListener("DOMContentLoaded", () => {
       keys: ["halo", "hai", "hi", "hallo", "assalam", "salam", "pagi", "siang", "sore", "malam", "permisi"],
       reply: function () {
         return {
-          text: "Halo juga! Aku asisten Dapur Mbak Yu 👋\nAku bisa bantu soal menu & harga, cabang, cara pesan, sampai ongkir. Mau tanya apa?",
+          text: "Halo, aku <b>Mbak Yu</b> 👋\nAku bantu jawab soal menu & harga, cabang, cara pesan, sampai ongkir. Mau tanya apa?",
           chips: ["Lihat menu", "Cabang di mana?", "Cara pesan", "Pembayaran"]
         };
       }
@@ -1781,7 +1877,7 @@ document.addEventListener("DOMContentLoaded", () => {
       keys: ["kamu bot", "ini bot", "robot", "manusia", "kamu siapa", "asisten", "admin", "cs"],
       reply: function () {
         return {
-          text: "Betul, aku <b>asisten otomatis</b> di website ini — bukan Mbak Yu. Aku jawab dari data menu dan FAQ yang tertera. Kalau perlu kepastian (stok, ongkir, pesanan khusus), lanjut ke WhatsApp ya.",
+          text: "Betul, aku <b>asisten otomatis</b> yang tampil sebagai Mbak Yu di website ini — bukan orangnya langsung. Aku jawab dari data menu dan FAQ yang tertera. Kalau perlu kepastian (stok, ongkir, pesanan khusus), lanjut ke WhatsApp ya.",
           actions: [{ type: "wa", label: "Chat Mbak Yu" }],
           chips: ["Lihat menu", "Cabang", "Cara pesan"]
         };
@@ -1841,23 +1937,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* ---------- render ---------- */
+  var AVA = '<span class="msg-ava" aria-hidden="true"><svg viewBox="24 30 48 48" preserveAspectRatio="xMidYMid slice"><use href="#mbak-yu" /></svg></span>';
+
   function bubble(html, who) {
+    var row = document.createElement("div");
+    row.className = "msg-row" + (who === "user" ? " right" : "");
+    if (who !== "user") row.innerHTML = AVA;
     var d = document.createElement("div");
     d.className = "msg " + who;
     d.innerHTML = html;
-    body.appendChild(d);
+    row.appendChild(d);
+    body.appendChild(row);
     body.scrollTop = body.scrollHeight;
     return d;
   }
 
   function typing() {
+    var row = document.createElement("div");
+    row.className = "msg-row";
+    row.innerHTML = AVA;
     var d = document.createElement("div");
     d.className = "msg bot typing";
-    d.setAttribute("aria-label", "Asisten sedang menulis");
+    d.setAttribute("aria-label", "Mbak Yu sedang menulis");
     d.innerHTML = "<i></i><i></i><i></i>";
-    body.appendChild(d);
+    row.appendChild(d);
+    body.appendChild(row);
     body.scrollTop = body.scrollHeight;
-    return d;
+    return row;
   }
 
   function renderChips(list) {
@@ -1963,6 +2069,7 @@ document.addEventListener("DOMContentLoaded", () => {
     panel.setAttribute("aria-hidden", "false");
     document.body.classList.add("chat-open");
     fab.setAttribute("aria-expanded", "true");
+    if (typeof hideTeaser === "function") hideTeaser();
     if (!started) {
       started = true;
       ask("halo", { silent: true, instant: true }).then(function () {
@@ -1994,6 +2101,35 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && panel.classList.contains("open")) close();
   });
+
+  /* ---------- balon panggilan (muncul sekali per sesi) ---------- */
+  var teaser = document.getElementById("chatTeaser");
+  var teaserX = document.getElementById("teaserX");
+
+  function hideTeaser() {
+    if (!teaser) return;
+    teaser.classList.remove("show");
+    try { sessionStorage.setItem("dmy_teaser", "1"); } catch (e) {}
+  }
+
+  if (teaser) {
+    var sudahLihat = false;
+    try { sudahLihat = sessionStorage.getItem("dmy_teaser") === "1"; } catch (e) {}
+    if (!sudahLihat) {
+      setTimeout(function () {
+        if (!panel.classList.contains("open")) teaser.classList.add("show");
+      }, 9000);
+      setTimeout(hideTeaser, 34000);
+    }
+    teaser.addEventListener("click", function (e) {
+      if (e.target.closest("#teaserX")) { hideTeaser(); return; }
+      hideTeaser();
+      open();
+    });
+    if (teaserX) teaserX.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); hideTeaser(); }
+    });
+  }
 
   // pintu uji otomatis
   window.__chat = { open: open, close: close, ask: ask, history: history, intents: KB.map(function (k) { return k.id; }) };

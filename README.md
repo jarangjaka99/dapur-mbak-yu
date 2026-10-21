@@ -119,6 +119,10 @@ Tombol bulat hijau di kanan bawah (ikon balon percakapan) membuka **Asisten Mbak
 
 **Kenapa bukan AI berbayar?** Karena website ini statis: API key yang ditanam di HTML bisa diambil siapa pun lewat *view source*, lalu dipakai atas biaya pemilik. Chatbot aturan (rule-based) tidak punya masalah itu.
 
+**Karakter Mbak Yu:** chatbot memakai maskot wajah berkerudung hijau (mirip label kemasan Sambel Pecel) yang digambar sebagai **SVG inline** — tidak ada file gambar tambahan, tetap tajam di semua ukuran, dan otomatis mengikuti palet merek. Wajahnya muncul di tiga tempat: tombol melayang, header panel sebagai avatar 42 px, dan avatar 30 px di samping setiap balasan beserta indikator "sedang menulis". Tombol melayang diberi titik hijau (aktif) dan lencana balon chat, plus **balon sapaan** yang muncul sekali per sesi setelah 9 detik ("Halo, aku Mbak Yu 👋") — bisa ditutup dan tidak muncul lagi sampai tab ditutup.
+
+**Batas persona:** header menuliskan **"Asisten otomatis"** dan topik `bot` menjelaskan bahwa ini asisten, bukan Mbak Yu orangnya. Karakternya adalah maskot merek, bukan klaim ada manusia yang sedang online.
+
 **Cara kerjanya:** pertanyaan dinormalisasi (huruf kecil, tanda baca dibuang) → dicocokkan dengan daftar kata kunci tiap topik memakai pencocokan **awalan kata** (jadi "ongkirnya" tetap kena "ongkir") → topik dengan skor tertinggi menjawab. Kalau tidak ada yang cocok, bot mengaku belum paham dan menawarkan WhatsApp.
 
 **Topik yang sudah ditangani (20):** sapaan, menu & harga, harga per produk, level pedas, halal, pengawet & masa simpan, ongkir/pengiriman luar kota, jam buka, alamat & peta dua cabang, pembayaran, minimal order, cara pesan, tambah ke keranjang dari dalam chat, promo, reseller/grosir, pesanan acara/katering, alergi & bahan, ukuran porsi, status pesanan/komplain, "kamu bot?", dan terima kasih.
