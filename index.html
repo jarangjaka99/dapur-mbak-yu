@@ -947,6 +947,11 @@
             <div class="hint">Dipakai kurir untuk konfirmasi alamat &amp; ongkir.</div>
           </div>
           <div class="field">
+            <label for="custAddress">Alamat pengiriman</label>
+            <textarea id="custAddress" name="alamat" placeholder="Contoh: Jl. Melati No. 12, RT 03 / RW 05, Jakamulya, Bekasi Selatan — patokan: depan masjid" required></textarea>
+            <div class="hint">Tulis alamat lengkap + patokan agar kurir tidak tersesat. Kalau mau <b>ambil sendiri</b> di cabang, tulis: &ldquo;Ambil sendiri di cabang&rdquo;.</div>
+          </div>
+          <div class="field">
             <label>Pilih cabang</label>
             <div class="branches" id="branchList">
               <label class="branch">
@@ -1477,7 +1482,7 @@ function syncUI(changedId) {
 /* =========================================================
    CHECKOUT WHATSAPP
    ========================================================= */
-function buildMessage({ name, phone, branchKey, note }) {
+function buildMessage({ name, phone, address, branchKey, note }) {
   const b = CONFIG.branches[branchKey];
   const { sum } = totals();
   const lines = MENU.map((m) => {
@@ -1498,8 +1503,8 @@ function buildMessage({ name, phone, branchKey, note }) {
     "------------------------------",
     `Nama    : ${name}`,
     `No. HP  : ${phone}`,
+    `Alamat  : ${address}`,
     `Cabang  : ${b.name}`,
-    `Alamat  : ${b.address}`,
     "------------------------------",
     "*Rincian pesanan:*",
     lines,
@@ -1517,12 +1522,14 @@ function submitOrder(e) {
   const { qty } = totals();
   const nameEl = document.getElementById("custName");
   const phoneEl = document.getElementById("custPhone");
+  const addrEl = document.getElementById("custAddress");
   const noteEl = document.getElementById("custNote");
   const hint = document.getElementById("sendHint");
   const branchKey = document.querySelector('input[name="cabang"]:checked').value;
 
   const name = nameEl.value.trim();
   const phone = phoneEl.value.trim();
+  const address = addrEl.value.trim();
 
   if (qty === 0) {
     hint.textContent = "Keranjang masih kosong — pilih menu dulu ya.";
@@ -1543,10 +1550,16 @@ function submitOrder(e) {
     phoneEl.focus();
     return;
   }
+  if (address.length < 8) {
+    hint.textContent = "Alamat pengiriman wajib diisi. Tulis alamat lengkap + patokan, atau \u201cAmbil sendiri di cabang\u201d.";
+    hint.style.color = "#A72614";
+    addrEl.focus();
+    return;
+  }
   hint.style.color = "";
   hint.textContent = "Membuka WhatsApp…";
 
-  const payload = { name, phone, branchKey, note: noteEl.value.trim() };
+  const payload = { name, phone, address, branchKey, note: noteEl.value.trim() };
   const msg = buildMessage(payload);
   const waUrl = `https://wa.me/${CONFIG.branches[branchKey].whatsapp}?text=${encodeURIComponent(msg)}`;
 
@@ -1556,6 +1569,7 @@ function submitOrder(e) {
       timestamp: new Date().toISOString(),
       nama_pelanggan: name,
       no_hp: phone,
+      alamat_pengiriman: address,
       cabang: CONFIG.branches[branchKey].name,
       rincian_pesanan: MENU.filter((m) => cart.has(m.id))
         .map((m) => `${m.name} x${cart.get(m.id)}`).join(", "),
@@ -1869,7 +1883,7 @@ document.addEventListener("DOMContentLoaded", () => {
       keys: ["cara pesan", "cara order", "gimana pesan", "bagaimana pesan", "checkout", "keranjang", "pemesanan", "order gimana", "beli gimana"],
       reply: function () {
         return {
-          text: "Gampang, tiga langkah:\n1. Pilih menu, tekan <b>Tambah</b> (jumlah bisa diubah)\n2. Isi nama, nomor HP, dan pilih cabang\n3. Tekan <b>Kirim Pesanan ke WhatsApp</b> — rincian otomatis tersusun\n\nTidak perlu daftar akun.",
+          text: "Gampang, tiga langkah:\n1. Pilih menu, tekan <b>Tambah</b> (jumlah bisa diubah)\n2. Isi nama, nomor HP, <b>alamat pengiriman</b>, lalu pilih cabang\n3. Tekan <b>Kirim Pesanan ke WhatsApp</b> — rincian otomatis tersusun\n\nAlamat wajib diisi supaya kurir tahu harus antar ke mana. Kalau mau ambil sendiri di cabang, tulis \"Ambil sendiri di cabang\". Tidak perlu daftar akun.",
           actions: [{ type: "scroll", label: "Buka form pesanan" }],
           chips: ["Lihat menu", "Ongkir", "Cabang"]
         };

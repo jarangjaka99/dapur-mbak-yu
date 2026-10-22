@@ -100,7 +100,8 @@ Teks pesan WhatsApp otomatis memakai data ini.
 
 1. Pembeli menekan **Tambah** pada kartu menu (bisa diubah dengan − / + di kartu maupun di ringkasan keranjang).
 2. Ringkasan keranjang menghitung subtotal per baris dan total, dengan catatan **belum termasuk ongkir**.
-3. Pembeli mengisi nama, nomor HP, memilih cabang, dan catatan opsional.
+3. Pembeli mengisi nama, nomor HP, **alamat pengiriman**, memilih cabang, dan catatan opsional.
+   Alamat pengiriman **wajib** (minimal 8 karakter) karena dipakai kurir. Pembeli yang ambil sendiri di cabang menulis: *"Ambil sendiri di cabang"*.
 4. Tombol **Kirim Pesanan ke WhatsApp** membuka WhatsApp cabang terpilih dengan pesan yang sudah rapi:
 
 ```text
@@ -108,8 +109,8 @@ Teks pesan WhatsApp otomatis memakai data ini.
 ------------------------------
 Nama    : Farid
 No. HP  : 081234567890
+Alamat  : Jl. Melati No. 12, RT 03/RW 05, Jakamulya, Bekasi Selatan (patokan: depan masjid)
 Cabang  : Cabang Cikunir (Bekasi Selatan)
-Alamat  : Jl. Raya Cikunir, Jakamulya, Bekasi Selatan
 ------------------------------
 *Rincian pesanan:*
 • Sambel Pecel × 1 — Rp 23.000
@@ -120,7 +121,9 @@ Catatan : pedas banget, sambel dipisah
 Waktu   : 19/10/26, 16.52 WIB
 ```
 
-Validasi yang sudah aktif: nama minimal 2 huruf, nomor HP minimal 9 angka, dan tombol kirim nonaktif saat keranjang kosong.
+> **Penting:** baris `Alamat` berisi alamat **pemesan**, bukan alamat toko. Alamat cabang tidak lagi dimasukkan ke pesan WhatsApp karena penerima pesan itu adalah cabang itu sendiri. Kalau nanti perlu alamat cabang ikut tercetak, tambahkan baris terpisah (`Toko    : ${b.address}`) di `buildMessage()` — jangan menimpa baris `Alamat`.
+
+Validasi yang sudah aktif: nama minimal 2 huruf, nomor HP minimal 9 angka, **alamat pengiriman minimal 8 karakter**, dan tombol kirim nonaktif saat keranjang kosong.
 
 ---
 
@@ -167,7 +170,7 @@ Tombol bulat hijau di kanan bawah (ikon balon percakapan) membuka **Asisten Mbak
 Website tetap jalan tanpa ini. Kalau ingin setiap pesanan tercatat otomatis:
 
 1. Buat Google Sheets dengan kolom baris 1:
-   `Timestamp | Nama Pelanggan | No HP | Cabang | Rincian Pesanan | Total Bayar | Catatan`
+   `Timestamp | Nama Pelanggan | No HP | Alamat Pengiriman | Cabang | Rincian Pesanan | Total Bayar | Catatan`
 2. Menu **Extensions → Apps Script**, tempel:
 
 ```javascript
@@ -175,8 +178,8 @@ function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     var d = JSON.parse(e.postData.contents);
-    sheet.appendRow([d.timestamp, d.nama_pelanggan, d.no_hp, d.cabang,
-                     d.rincian_pesanan, d.total_bayar, d.catatan]);
+    sheet.appendRow([d.timestamp, d.nama_pelanggan, d.no_hp, d.alamat_pengiriman,
+                     d.cabang, d.rincian_pesanan, d.total_bayar, d.catatan]);
     return ContentService.createTextOutput(JSON.stringify({status:"success"}))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
